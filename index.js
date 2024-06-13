@@ -124,6 +124,33 @@ app.get('/gemini', async (req, res) => {
   }
 });
 
+app.get('/ngl', async (req, res) => {
+  const { username, message, deviceId, amount } = req.query;
+
+  if (!username || !message || !amount) {
+    return res.status(400).json({ error: "Username, message, and amount are required" });
+  }
+
+  const url = 'https://ngl.link/api/submit';
+  const payload = { username, question: message, deviceId };
+  const headers = { 'Content-Type': 'application/json' };
+
+  try {
+    for (let i = 0; i < parseInt(amount); i++) {
+      const response = await axios.post(url, payload, { headers });
+      console.log(`Message ${i + 1} sent`);
+    }
+
+    res.json({ 
+      message: "Messages sent",
+      developedBy: "Joshua Apostol"
+    });
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(error.response.status || 500).json({ error: "An error occurred while sending the messages" });
+  }
+});
+
 app.get('/quote', async (req, res) => {
   try {
     const response = await axios.get('https://quotes.toscrape.com');
