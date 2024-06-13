@@ -181,7 +181,94 @@ app.get('/trivia', async (req, res) => {
     console.error('Error:', error);
     res.status(500).send('An error occurred while fetching the trivia');
   }
-});  
+});
+
+app.get('/eduTrivia', async (req, res) => {
+  try {
+    const response = await axios.get('https://opentdb.com/api.php?amount=1&category=17');
+    const trivia = response.data.results[0];
+    res.json({
+      category: trivia.category,
+      question: trivia.question,
+      correct_answer: trivia.correct_answer,
+      incorrect_answers: trivia.incorrect_answers
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the trivia');
+  }
+});
+
+app.get('/pornhub', async (req, res) => {
+  try {
+    const response = await axios.get('https://www.pornhub.com');
+    const html = response.data;
+    const $ = cheerio.load(html);
+
+    const videos = [];
+    $('li.videoBox a').each((i, element) => {
+      const title = $(element).attr('title');
+      const link = `https://www.pornhub.com${$(element).attr('href')}`;
+      videos.push({ title, link });
+    });
+
+    const randomVideo = videos[Math.floor(Math.random() * videos.length)];
+    res.json(randomVideo);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the video');
+  }
+});
+
+app.get('/xvideos', async (req, res) => {
+  try {
+    const response = await axios.get('https://www.xvideos.com');
+    const html = response.data;
+    const $ = cheerio.load(html);
+
+    const videos = [];
+    $('div.thumb a').each((i, element) => {
+      const title = $(element).attr('title');
+      const link = `https://www.xvideos.com${$(element).attr('href')}`;
+      videos.push({ title, link });
+    });
+
+    const randomVideo = videos[Math.floor(Math.random() * videos.length)];
+    res.json(randomVideo);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the video');
+  }
+});
+
+app.get('/xvideosearch', async (req, res) => {
+  const searchQuery = req.query.search;
+
+  if (!searchQuery) {
+    return res.status(400).send('Search query parameter is required');
+  }
+
+  const url = `https://www.xvideos.com/?k=${encodeURIComponent(searchQuery)}`;
+
+  try {
+    const response = await axios.get(url);
+    const html = response.data;
+    const $ = cheerio.load(html);
+
+    const videos = [];
+    $('div.thumb-block').each((i, element) => {
+      const title = $(element).find('p').text().trim();
+      const link = $(element).find('a').attr('href');
+      const thumbnail = $(element).find('img').attr('data-src');
+      videos.push({ title, link, thumbnail });
+    });
+
+    res.json({ videos });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the videos');
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
