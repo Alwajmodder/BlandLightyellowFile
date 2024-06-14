@@ -227,6 +227,32 @@ app.get('/eduTrivia', async (req, res) => {
   }
 });
 
+app.get('/wikipedia', async (req, res) => {
+  const searchQuery = req.query.search;
+
+  if (!searchQuery) {
+    return res.status(400).send('Search query parameter is required');
+  }
+
+  const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchQuery)}`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+
+    const result = {
+      title: data.title,
+      extract: data.extract,
+      page_url: data.content_urls.desktop.page,
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching information');
+  }
+});
+
 app.get('/pornhub', async (req, res) => {
   try {
     const response = await axios.get('https://www.pornhub.com');
