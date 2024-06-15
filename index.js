@@ -416,6 +416,28 @@ app.get('/xvideosearch', async (req, res) => {
   }
 });
 
+app.get('/waifu', async (req, res) => {
+  const searchQuery = req.query.search;
+
+  if (!searchQuery) {
+    return res.status(400).send('Search query parameter is required');
+  }
+
+  const url = `https://api.waifu.im/search?q=${encodeURIComponent(searchQuery)}`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+    res.json({ 
+      data,
+      message: "Developed by Joshua Apostol"
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the data');
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
