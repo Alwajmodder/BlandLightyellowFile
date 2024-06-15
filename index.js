@@ -253,6 +253,28 @@ app.get('/wikipedia', async (req, res) => {
   }
 });
 
+app.get('/wikipedia-image-url', async (req, res) => {
+  const searchQuery = req.query.search;
+
+  if (!searchQuery) {
+    return res.status(400).send('Search query parameter is required');
+  }
+
+  const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&titles=${encodeURIComponent(searchQuery)}&formatversion=2&pithumbsize=300`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+    const page = data.query.pages[0];
+    const imageUrl = page.thumbnail ? page.thumbnail.source : null;
+
+    res.json({ imageUrl });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the image');
+  }
+});
+
 app.get('/pornhub', async (req, res) => {
   try {
     const response = await axios.get('https://www.pornhub.com');
@@ -271,6 +293,76 @@ app.get('/pornhub', async (req, res) => {
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('An error occurred while fetching the video');
+  }
+});
+
+app.get('/pornhubsearch', async (req, res) => {
+  const searchQuery = req.query.search;
+
+  if (!searchQuery) {
+    return res.status(400).send('Search query parameter is required');
+  }
+
+  const url = `https://www.pornhub.com/video/search?search=${encodeURIComponent(searchQuery)}`;
+
+  try {
+    const response = await axios.get(url);
+    const html = response.data;
+    const $ = cheerio.load(html);
+
+    const videos = [];
+    $('li.videoBox').each((i, element) => {
+      const title = $(element).find('span.title a').attr('title');
+      const link = `https://www.pornhub.com${$(element).find('span.title a').attr('href')}`;
+      const thumbnail = $(element).find('img').attr('data-thumb_url') || $(element).find('img').attr('src');
+      videos.push({ title, link, thumbnail });
+    });
+
+    res.json({ videos });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the videos');
+  }
+});
+
+app.get('/pornhubdownload', async (req, res) => {
+  const videoUrl = req.query.url;
+
+  if (!videoUrl) {
+    return res.status(400).send('Video URL query parameter is required');
+  }
+
+  try {
+    const response = await axios.get(videoUrl);
+    const html = response.data;
+    const $ = cheerio.load(html);
+
+    const scripts = $('script').toArray();
+    let videoLinks = [];
+
+    for (let script of scripts) {
+      const scriptContent = $(script).html();
+      if (scriptContent && scriptContent.includes('flashvars_')) {
+        const flashvars = JSON.parse(scriptContent.match(/flashvars_\d+\s*=\s*(\{.*?\});/)[1]);
+        const mediaDefinitions = flashvars.mediaDefinitions;
+
+        mediaDefinitions.forEach(def => {
+          if (def.quality && def.videoUrl) {
+            videoLinks.push({
+              quality: def.quality,
+              url: def.videoUrl
+            });
+          }
+        });
+
+        break;
+      }
+    }
+
+    res.json({ videoLinks });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the video download links');
   }
 });
 
