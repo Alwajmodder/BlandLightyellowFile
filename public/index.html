@@ -86,6 +86,22 @@ footer {
   0% { transform: rotateY(0deg); }
   100% { transform: rotateY(360deg); }
 }
+
+.learn-button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  background-color: rgba(255,255,255,0.2);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  font-size: 1rem;
+}
+
+.learn-button:hover {
+  background-color: rgba(255,255,255,0.4);
+}
 </style>
 </head>
 <body>
@@ -93,6 +109,7 @@ footer {
   <div class="container">
     <img src="https://i.imgur.com/Ed5YUaU.png" alt="bilat" class="bilat">
     <h1>NASH API END</h1>
+    <a href="learncode.html" class="learn-button"><i class="fa-solid fa-code"></i> Learn Code</a>
     <ul>
       <li>
         <a onclick="page('/pinoygpt?prompt=')"><i class="fa-solid fa-robot"></i> gpt-3</a>
@@ -122,12 +139,12 @@ footer {
         <a onclick="page('/eduTrivia')"><i class="fas fa-question-circle trivia-icon"></i> EduTrivia</a>
       </li>
       <li>
-  <a href="/wikipedia?search=Albert%20Einstein"><i class="fab fa-wikipedia-w"></i> Wikipedia</a>
-     </li>
-      <li>
-  <a href="/wikipedia-image-url?search=Albert%20Einstein"><i class="fab fa-wikipedia-w"></i> Wikipedia-image-url</a>
+        <a href="/wikipedia?search=Albert%20Einstein"><i class="fab fa-wikipedia-w"></i> Wikipedia</a>
       </li>
-     <li>
+      <li>
+        <a href="/wikipedia-image-url?search=Albert%20Einstein"><i class="fab fa-wikipedia-w"></i> Wikipedia-image-url</a>
+      </li>
+      <li>
         <a onclick="page('/pornhub')"><i class="fas fa-exclamation-triangle"></i> 18+ | Pornhub</a>
       </li>
       <li>
@@ -146,7 +163,7 @@ footer {
   </div>
 </div>
 <footer>
-  &copy;  Joshua Apostol, All rights reserved.
+  &copy; Joshua Apostol, All rights reserved.
 </footer>
 <script>
 function page(url) {
