@@ -1,18 +1,20 @@
 const express = require('express');
 const axios = require('axios');
-const cors = require('cors');
 const bodyParser = require('body-parser');
 const cheerio = require('cheerio');
 const path = require('path');
+const cors = require('cors'); // Import cors package
 
-app.use(cors());
 const app = express();
+app.use(cors()); // Enable CORS for all routes
 app.set('json spaces', 4);
 const port = 3000;
 
+// Middleware setup
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Root endpoint
 app.get('/', (req, res) => {
   res.json({ 
     model: "joshua 3.5",
@@ -20,6 +22,7 @@ app.get('/', (req, res) => {
   });
 });
 
+// PinoyGPT endpoint
 app.get('/pinoygpt', async (req, res) => {
   const prompt = req.query.prompt;
 
@@ -66,6 +69,7 @@ app.get('/pinoygpt', async (req, res) => {
   }
 });
 
+// FreeGPT4O8K endpoint
 app.get('/freegpt4o8k', async (req, res) => {
   const question = req.query.question;
 
@@ -92,6 +96,7 @@ app.get('/freegpt4o8k', async (req, res) => {
   }
 });
 
+// Gemini endpoint
 app.get('/gemini', async (req, res) => {
   const prompt = req.query.prompt;
 
@@ -127,6 +132,7 @@ app.get('/gemini', async (req, res) => {
   }
 });
 
+// NGL endpoint
 app.get('/ngl', async (req, res) => {
   const { username, message, deviceId, amount } = req.query;
 
@@ -154,6 +160,7 @@ app.get('/ngl', async (req, res) => {
   }
 });
 
+// Quote endpoint
 app.get('/quote', async (req, res) => {
   try {
     const response = await axios.get('https://quotes.toscrape.com');
@@ -175,6 +182,7 @@ app.get('/quote', async (req, res) => {
   }
 });
 
+// Joke endpoint
 app.get('/joke', async (req, res) => {
   try {
     const response = await axios.get('https://icanhazdadjoke.com/', {
@@ -187,6 +195,7 @@ app.get('/joke', async (req, res) => {
   }
 });
 
+// Fact endpoint
 app.get('/fact', async (req, res) => {
   try {
     const response = await axios.get('https://useless-facts.sameerkumar.website/api');
@@ -197,6 +206,7 @@ app.get('/fact', async (req, res) => {
   }
 });
 
+// Trivia endpoint
 app.get('/trivia', async (req, res) => {
   try {
     const response = await axios.get('https://opentdb.com/api.php?amount=1');
@@ -213,6 +223,7 @@ app.get('/trivia', async (req, res) => {
   }
 });
 
+// EduTrivia endpoint
 app.get('/eduTrivia', async (req, res) => {
   try {
     const response = await axios.get('https://opentdb.com/api.php?amount=1&category=17');
@@ -229,6 +240,7 @@ app.get('/eduTrivia', async (req, res) => {
   }
 });
 
+// Wikipedia endpoint
 app.get('/wikipedia', async (req, res) => {
   const searchQuery = req.query.search;
 
@@ -236,7 +248,7 @@ app.get('/wikipedia', async (req, res) => {
     return res.status(400).send('Search query parameter is required');
   }
 
-  const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchQuery)}`;
+    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchQuery)}`;
 
   try {
     const response = await axios.get(url);
@@ -255,6 +267,7 @@ app.get('/wikipedia', async (req, res) => {
   }
 });
 
+// Wikipedia Image URL endpoint
 app.get('/wikipedia-image-url', async (req, res) => {
   const searchQuery = req.query.search;
 
@@ -277,6 +290,7 @@ app.get('/wikipedia-image-url', async (req, res) => {
   }
 });
 
+// Pornhub random video endpoint
 app.get('/pornhub', async (req, res) => {
   try {
     const response = await axios.get('https://www.pornhub.com');
@@ -298,6 +312,7 @@ app.get('/pornhub', async (req, res) => {
   }
 });
 
+// Pornhub search videos endpoint
 app.get('/pornhubsearch', async (req, res) => {
   const searchQuery = req.query.search;
 
@@ -327,6 +342,7 @@ app.get('/pornhubsearch', async (req, res) => {
   }
 });
 
+// Pornhub download links endpoint
 app.get('/pornhubdownload', async (req, res) => {
   const videoUrl = req.query.url;
 
@@ -368,6 +384,7 @@ app.get('/pornhubdownload', async (req, res) => {
   }
 });
 
+// Xvideos random video endpoint
 app.get('/xvideos', async (req, res) => {
   try {
     const response = await axios.get('https://www.xvideos.com');
@@ -389,6 +406,7 @@ app.get('/xvideos', async (req, res) => {
   }
 });
 
+// Xvideos search videos endpoint
 app.get('/xvideosearch', async (req, res) => {
   const searchQuery = req.query.search;
 
@@ -418,6 +436,7 @@ app.get('/xvideosearch', async (req, res) => {
   }
 });
 
+// Waifu endpoint
 app.get('/waifu', async (req, res) => {
   const searchQuery = req.query.search;
 
@@ -443,6 +462,7 @@ app.get('/waifu', async (req, res) => {
   }
 });
 
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
