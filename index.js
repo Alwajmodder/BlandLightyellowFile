@@ -3,18 +3,16 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const cheerio = require('cheerio');
 const path = require('path');
-const cors = require('cors'); // Import cors package
+const cors = require('cors');
 
 const app = express();
-app.use(cors()); // Enable CORS for all routes
+app.use(cors());
 app.set('json spaces', 4);
 const port = 3000;
 
-// Middleware setup
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Root endpoint
 app.get('/', (req, res) => {
   res.json({ 
     model: "joshua 3.5",
