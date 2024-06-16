@@ -288,6 +288,65 @@ app.get('/wikipedia-image-url', async (req, res) => {
   }
 });
 
+function ps(search) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const { data, status } = await axios.get(
+                `https://play.google.com/store/search?q=${search}&c=apps`,
+            );
+            const result = [];
+            const $ = cheerio.load(data);
+            $(
+                ".ULeU3b > .VfPpkd-WsjYwc.VfPpkd-WsjYwc-OWXEXe-INsAgc.KC1dQ.Usd1Ac.AaN0Dd.Y8RQXd > .VfPpkd-aGsRMb > .VfPpkd-EScbFb-JIbuQc.TAQqTe > a",
+            ).each((i, u) => {
+                const linkk = $(u).attr("href");
+                const names = $(u)
+                    .find(".j2FCNc > .cXFu1 > .ubGTjb > .DdYX5")
+                    .text();
+                const developer = $(u)
+                    .find(".j2FCNc > .cXFu1 > .ubGTjb > .wMUdtb")
+                    .text();
+                const img = $(u).find(".j2FCNc > img").attr("src");
+                const rate = $(u)
+                    .find(".j2FCNc > .cXFu1 > .ubGTjb > div")
+                    .attr("aria-label");
+                const rate2 = $(u)
+                    .find(".j2FCNc > .cXFu1 > .ubGTjb > div > span.w2kbF")
+                    .text();
+                const link = `https://play.google.com${linkk}`;
+
+                result.push({
+                    link: link,
+                    name: names ? names : "No name",
+                    developer: developer ? developer : "No Developer",
+                    image: img ? img : "https://i.ibb.co/G7CrCwN/404.png",
+                    rate: rate ? rate : "No Rate",
+                    rate2: rate2 ? rate2 : "No Rate",
+                });
+            });
+            if (result.every((x) => x === undefined))
+                return resolve({
+                    message: "no result found",
+                });
+            resolve(result);
+        } catch (err) {
+            resolve({
+                message: "no result found",
+            });
+        }
+    });
+}
+
+app.get("/search", async (req, res) => {
+    const searchQuery = req.query.q;
+    if (!searchQuery) {
+        return res.status(400).json({ message: "Query parameter 'q' is required" });
+    }
+
+    const results = await ps(searchQuery);
+    res.json(results);
+});
+
 // Pornhub random video endpoint
 app.get('/pornhub', async (req, res) => {
   try {
@@ -460,7 +519,6 @@ app.get('/waifu', async (req, res) => {
   }
 });
 
-// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
