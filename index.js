@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cheerio = require('cheerio');
 const path = require('path');
 
+const cors = require('cors');
 const app = express();
 app.set('json spaces', 4);
 const port = 3000;
@@ -416,6 +417,8 @@ app.get('/xvideosearch', async (req, res) => {
   }
 });
 
+app.use(cors());
+
 app.get('/waifu', async (req, res) => {
   const searchQuery = req.query.search;
 
@@ -428,6 +431,10 @@ app.get('/waifu', async (req, res) => {
   try {
     const response = await axios.get(url);
     const data = response.data;
+
+    // Set the CORS headers to allow all origins
+    res.set('Access-Control-Allow-Origin', '*');
+
     res.json({ 
       data,
       message: "Developed by Joshua Apostol"
