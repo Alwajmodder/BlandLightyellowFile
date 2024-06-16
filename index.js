@@ -1,10 +1,11 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const cheerio = require('cheerio');
 const path = require('path');
 
-const cors = require('cors');
+app.use(cors());
 const app = express();
 app.set('json spaces', 4);
 const port = 3000;
@@ -14,7 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   res.json({ 
-    model: "gpt-3",
+    model: "joshua 3.5",
     message: "Developed by Joshua Apostol"
   });
 });
@@ -417,8 +418,6 @@ app.get('/xvideosearch', async (req, res) => {
   }
 });
 
-app.use(cors());
-
 app.get('/waifu', async (req, res) => {
   const searchQuery = req.query.search;
 
@@ -432,7 +431,6 @@ app.get('/waifu', async (req, res) => {
     const response = await axios.get(url);
     const data = response.data;
 
-    // Set the CORS headers to allow all origins
     res.set('Access-Control-Allow-Origin', '*');
 
     res.json({ 
