@@ -20,77 +20,23 @@ app.get('/', (req, res) => {
   });
 });
 
-// PinoyGPT endpoint
-app.get('/pinoygpt', async (req, res) => {
-  const prompt = req.query.prompt;
+// adobo/gpt endpoint
+app.get('/adobo/gpt', async (req, res) => {
+  const query = req.query.query;
 
-  if (!prompt) {
-    return res.status(400).send('Prompt query parameter is required');
+  if (!query) {
+    return res.status(400).json({ error: 'Query parameter is required' });
   }
 
-  const url = "https://www.pinoygpt.com/wp-json/mwai-ui/v1/chats/submit";
-
-  const payloads = {
-    "botId": "default",
-    "customId": "e369e9665e1e4fa3fd0cdc970f31cf12",
-    "session": "N/A",
-    "chatId": "idalu4ccx0d",
-    "contextId": 12,
-    "messages": [
-      {
-        "id": "m6zlfpskhwc",
-        "role": "assistant",
-        "content": "Hi! How can I help you?",
-        "who": "AI: ",
-        "timestamp": 1718204724871
-      }
-    ],
-    "newMessage": prompt,
-    "newFileId": null,
-    "stream": true
-  };
-
-  const headers = {
-    "Content-Type": 'application/json',
-    "X-WP-Nonce": '51dbc743fe',
-    "User-Agent": 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36'
-  };
-
-  try {
-    const response = await axios.post(url, payloads, { headers: headers });
-    const tite = response.data;
-    const x_ = tite.split('data:')[tite.split('data:').length - 1].trim();
-    res.send(x_);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('An error occurred');
-  }
-});
-
-// FreeGPT4O8K endpoint
-app.get('/freegpt4o8k', async (req, res) => {
-  const question = req.query.question;
-
-  if (!question) {
-    return res.status(400).send('Question query parameter is required');
-  }
-
-  const url = `https://api.kenliejugarap.com/freegpt4o8k/?question=${encodeURIComponent(question)}`;
+  const url = `https://markdevs-api.onrender.com/api/ashley/gpt?query=${encodeURIComponent(query)}`;
 
   try {
     const response = await axios.get(url);
-    let answer = response.data;
-    
-    if (typeof answer !== 'string') {
-      answer = JSON.stringify(answer);
-    }
-
-    answer = answer.replace(/Kindly click the link below\\nhttps:\/\/click2donate\.kenliejugarap\.com\\n\(Clicking the link and clicking any ads or button and wait for 30 seconds \(3 times\) everyday is a big donation and help to us to maintain the servers, last longer, and upgrade servers in the future\)/g, '');
-
-    res.json({ answer });
+    const result = response.data.result;
+    res.json({ answer: result });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('An error occurred while fetching the response');
+    console.error('Error:', error.message);
+    res.status(500).json({ error: 'An error occurred while fetching the response' });
   }
 });
 
