@@ -40,6 +40,32 @@ app.get('/adobo/gpt', async (req, res) => {
   }
 });
 
+app.get('/freegpt4o8k', async (req, res) => {
+  const question = req.query.question;
+
+  if (!question) {
+    return res.status(400).send('Question query parameter is required');
+  }
+
+  const url = `https://api.kenliejugarap.com/freegpt4o8k/?question=${encodeURIComponent(question)}`;
+
+  try {
+    const response = await axios.get(url);
+    let answer = response.data;
+    
+    if (typeof answer !== 'string') {
+      answer = JSON.stringify(answer);
+    }
+
+    answer = answer.replace(/Kindly click the link below\\nhttps:\/\/click2donate\.kenliejugarap\.com\\n\(Clicking the link and clicking any ads or button and wait for 30 seconds \(3 times\) everyday is a big donation and help to us to maintain the servers, last longer, and upgrade servers in the future\)/g, '');
+
+    res.json({ answer });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the response');
+  }
+});
+
 // Gemini endpoint
 app.get('/gemini', async (req, res) => {
   const prompt = req.query.prompt;
