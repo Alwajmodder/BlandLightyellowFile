@@ -104,6 +104,27 @@ app.get('/ngl', async (req, res) => {
   }
 });
 
+//appstate getter
+app.get('/app-state', async (req, res) => {
+  const email = req.query.email;
+  const password = req.query.password;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password parameters are required' });
+  }
+
+  const url = `https://markdevs-api.onrender.com/api/appstate?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ error: 'An error occurred while fetching the app state' });
+  }
+});
+
 // Quote endpoint
 app.get('/quote', async (req, res) => {
   try {
