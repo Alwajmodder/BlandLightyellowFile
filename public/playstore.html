@@ -172,10 +172,10 @@ function fetchResults(query) {
   const resultsContainer = document.getElementById('results');
   resultsContainer.innerHTML = '<p>Loading...</p>';
 
-  fetch(`https://nas-api-end.onrender.com/search?q=${query}`)
+  fetch(`https://nash-api-end.onrender.com/search?q=${query}`)
     .then(response => response.json())
     .then(data => {
-      resultsContainer.innerHTML = ''; // Clear loading message
+      resultsContainer.innerHTML = '';
 
       if (data.length > 0) {
         document.getElementById('searchResultsTitle').textContent = `Results for "${query}"`;
