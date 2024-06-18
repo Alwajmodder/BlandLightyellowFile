@@ -20,6 +20,26 @@ app.get('/', (req, res) => {
   });
 });
 
+//gpt4 endpoints
+app.get('/gpt4', async (req, res) => {
+  const query = req.query.query;
+
+  if (!query) {
+    return res.status(400).json({ error: 'Query parameter is required' });
+  }
+
+  const url = `https://markdevs-api.onrender.com/api/v2/gpt4?query=${encodeURIComponent(query)}`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+    res.json(data); // Assuming the response directly contains the GPT-4 generated text
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ error: 'An error occurred while fetching the GPT-4 response' });
+  }
+});
+
 // adobo/gpt endpoint
 app.get('/adobo/gpt', async (req, res) => {
   const query = req.query.query;
