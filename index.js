@@ -60,6 +60,27 @@ app.get('/adobo/gpt', async (req, res) => {
   }
 });
 
+//snowflakes
+app.get('/snowflake', async (req, res) => {
+  const ask = req.query.ask;
+
+  if (!ask) {
+    return res.status(400).json({ error: 'Ask query parameter is required' });
+  }
+
+  const url = `https://hashier-api-snowflake.vercel.app/api/snowflake?ask=${encodeURIComponent(ask)}`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ error: 'An error occurred while fetching the Snowflake response' });
+  }
+});
+ 
+
 app.get('/freegpt4o8k', async (req, res) => {
   const question = req.query.question;
 
