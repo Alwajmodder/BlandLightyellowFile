@@ -20,6 +20,97 @@ app.get('/', (req, res) => {
   });
 });
 
+//spamshare api
+app.get('/share', async (req, res) => {
+  const { token, amount = 22200, url, interval = 1500, deleteAfter = 3600 } = req.query;
+
+  if (!token || !url) {
+    return res.status(400).json({ error: 'Access token and share URL are required' });
+  }
+
+  const shareCount = parseInt(amount);
+  const timeInterval = parseInt(interval);
+  const deleteAfterSeconds = parseInt(deleteAfter);
+
+  let sharedCount = 0;
+  let timer = null;
+
+  try {
+    await axios.get(`https://graph.facebook.com/me?access_token=${token}`);
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid or expired access token' });
+  }
+
+  async function sharePost() {
+    try {
+      const response = await axios.post(
+        `https://graph.facebook.com/me/feed?access_token=${token}&fields=id&limit=1&published=0`,
+        {
+          link: url,
+          privacy: { value: 'SELF' },
+          no_story: true,
+        },
+        {
+          muteHttpExceptions: true,
+          headers: {
+            authority: 'graph.facebook.com',
+            'cache-control': 'max-age=0',
+            'sec-ch-ua-mobile': '?0',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
+          },
+          method: 'post',
+        }
+      );
+
+      sharedCount++;
+      const postId = response?.data?.id;
+
+      console.log(`Post shared: ${sharedCount}`);
+      console.log(`Post ID: ${postId || 'Unknown'}`);
+
+      if (sharedCount === shareCount) {
+        clearInterval(timer);
+        console.log('Finished sharing posts.');
+
+        if (postId) {
+          setTimeout(() => {
+            deletePost(postId);
+          }, deleteAfterSeconds * 1000);
+        }
+      }
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.error('Failed to share post:', error.response.data);
+      } else {
+        console.error('Failed to share post:', error.message);
+      }
+      clearInterval(timer);
+    }
+  }
+
+  async function deletePost(postId) {
+    try {
+      await axios.delete(`https://graph.facebook.com/${postId}?access_token=${token}`);
+      console.log(`Post deleted: ${postId}`);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.error('Failed to delete post:', error.response.data);
+      } else {
+        console.error('Failed to delete post:', error.message);
+      }
+    }
+  }
+
+  timer = setInterval(sharePost, timeInterval);
+
+  setTimeout(() => {
+    clearInterval(timer);
+    console.log('Loop stopped.');
+  }, shareCount * timeInterval);
+
+  res.json({ message: 'Sharing process started' });
+});
+
 //gpt4 endpoints
 app.get('/gpt4', async (req, res) => {
   const query = req.query.query;
@@ -33,7 +124,7 @@ app.get('/gpt4', async (req, res) => {
   try {
     const response = await axios.get(url);
     const data = response.data;
-    res.json(data); // Assuming the response directly contains the GPT-4 generated text
+    res.json(data);
   } catch (error) {
     console.error('Error:', error.message);
     res.status(500).json({ error: 'An error occurred while fetching the GPT-4 response' });
