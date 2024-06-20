@@ -208,7 +208,7 @@ app.get('/gemini', async (req, res) => {
 
   const headers = {
     "Content-Type": 'application/json',
-    "X-WP-Nonce": '43c48d21df',
+    "X-WP-Nonce": 'c11f292b1a',
     "User-Agent": 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36'
   };
 
