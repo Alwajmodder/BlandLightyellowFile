@@ -644,7 +644,6 @@ app.get('/waifu', async (req, res) => {
   }
 });
 
-//autocomment
 const loveLifeMessages = [
   "Love is not about how much you say 'I love you', but how much you prove that it's true.",
   "The best thing to hold onto in life is each other.",
@@ -700,7 +699,7 @@ async function postComment(accessToken, postId, message) {
     );
     return { success: true, commentId: response.data.id };
   } catch (error) {
-    return { success: false, error: error.response.data };
+    return { success: false, error: error.response ? error.response.data : error.message };
   }
 }
 
