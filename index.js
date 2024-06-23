@@ -768,6 +768,30 @@ app.get('/search/chords', async (req, res) => {
   }
 });
 
+//county api
+app.get('/country', async (req, res) => {
+  const countryCode = req.query.code;
+
+  if (!countryCode) {
+    return res.status(400).send('Country code parameter is required');
+  }
+
+  try {
+    const url = `https://restcountries.com/v3.1/alpha/${countryCode}`;
+    const response = await axios.get(url);
+
+    if (response.data && response.data.length > 0) {
+      const countryData = response.data[0];
+      res.json(countryData);
+    } else {
+      res.status(404).send('dili nako makita lugar bay');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching country information');
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
