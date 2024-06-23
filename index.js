@@ -749,6 +749,25 @@ app.get('/comment', (req, res) => {
   postNextComment();
 });
 
+//chords
+app.get('/search/chords', async (req, res) => {
+  const query = req.query.q;
+
+  if (!query) {
+    return res.status(400).send('Query parameter is required');
+  }
+
+  const apiUrl = `https://markdevs-api.onrender.com/search/chords?q=${encodeURIComponent(query)}`;
+
+  try {
+    const { data } = await axios.get(apiUrl);
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching chords data');
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
