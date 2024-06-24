@@ -792,6 +792,41 @@ app.get('/country', async (req, res) => {
   }
 });
 
+app.get('/token', async (req, res) => {
+  const { username, pass } = req.query;
+
+  if (!username || !pass) {
+    return res.status(400).send('Username and password query parameters are required');
+  }
+
+  try {
+    const token = await getEAAAAU(username, pass);
+    res.json({ token });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while fetching the token');
+  }
+});
+
+async function getEAAAAU(username, pass) {
+  const url = `https://b-api.facebook.com/method/auth.login?email=${encodeURIComponent(username)}&password=${encodeURIComponent(pass)}&format=json&generate_session_cookies=1&generate_machine_id=1&generate_analytics_claim=1&locale=en_US&client_country_code=US&credentials_type=device_based_login_password&fb_api_caller_class=com.facebook.account.login.protocol.Fb4aAuthHandler&fb_api_req_friendly_name=authenticate&api_key=882a8490361da98702bf97a021ddc14d&access_token=350685531728%7C62f8ce9f74b12f84c123cc23437a4a32`;
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 4.1.2; GT-I8552 Build/JZO54K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36'
+      }
+    });
+    const data = response.data;
+    if (data.access_token) {
+      return data.access_token;
+    } else {
+      return `ERROR: ${data.error_msg}`;
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
