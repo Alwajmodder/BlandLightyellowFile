@@ -759,6 +759,73 @@ app.get('/gemini', async (req, res) => {
   }
 });
 
+//glm4
+app.get('/glm4', async (req, res) => {
+  try {
+    const url = 'https://udify.app/api/chat-messages';
+    const headers = {
+      'authority': 'udify.app',
+      'accept': '*/*',
+      'accept-language': 'en-US,en;q=0.9',
+      'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJlYjQ1NGRjMS1iMzU4LTQ1YzMtOWYwYi1iNzUzMDJkMDBiZmYiLCJzdWIiOiJXZWIgQVBJIFBhc3Nwb3J0IiwiYXBwX2lkIjoiZWI0NTRkYzEtYjM1OC00NWMzLTlmMGItYjc1MzAyZDAwYmZmIiwiYXBwX2NvZGUiOiJQZTg5VHRhWDNyS1hNOE5TIiwiZW5kX3VzZXJfaWQiOiI5YTcyOWRlNC04MWVkLTQ5ZmUtOThiNS1mMWRhNDkxYmIyYWQifQ.kw_x2Ve5JJ9AoeaI4a28yNvFalaXRrrCzYrboeBXYzQ',
+      'content-type': 'application/json',
+      'origin': 'https://udify.app',
+      'referer': 'https://udify.app/chat/Pe89TtaX3rKXM8NS',
+      'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+      'sec-ch-ua-mobile': '?1',
+      'sec-ch-ua-platform': '"Android"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin',
+      'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
+    };
+
+    const queryMessage = req.query.message;
+
+    if (!queryMessage) {
+      return res.status(400).json({ error: 'Message query parameter is required' });
+    }
+
+    const data = {
+      "response_mode": "streaming",
+      "conversation_id": "c3f0f65c-ad40-490a-9ec3-914222b5223c",
+      "query": queryMessage,
+      "inputs": {}
+    };
+
+    const response = await axios.post(url, data, { headers, responseType: 'stream' });
+
+    if (response.status === 200) {
+      let fullResponse = '';
+
+      response.data.on('data', (chunk) => {
+        const decodedLine = chunk.toString('utf-8').replace("data: ", "");
+        try {
+          const message = JSON.parse(decodedLine);
+          if (message.answer) {
+            fullResponse += message.answer;
+          }
+        } catch (err) {
+          
+        }
+      });
+
+      response.data.on('end', () => {
+        res.json({ author: 'NashBot', fullResponse });
+      });
+
+      response.data.on('error', (err) => {
+        res.status(500).json({ error: 'An error occurred while processing the stream' });
+      });
+
+    } else {
+      res.status(response.status).send(response.statusText);
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching data' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
