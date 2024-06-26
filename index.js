@@ -811,7 +811,7 @@ app.get('/glm4', async (req, res) => {
       });
 
       response.data.on('end', () => {
-        res.json({ author: 'Nashbot', fullResponse });
+        res.json({ author: 'NashBot', fullResponse });
       });
 
       response.data.on('error', (err) => {
