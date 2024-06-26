@@ -13,13 +13,6 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-  res.json({ 
-    model: "joshua 3.5",
-    message: "Developed by Joshua Apostol"
-  });
-});
-
 //spamshare api
 app.get('/share', async (req, res) => {
   const { token, amount = 22200, url, interval = 1500, deleteAfter = 3600 } = req.query;
@@ -131,26 +124,6 @@ app.get('/gpt4', async (req, res) => {
   }
 });
 
-// adobo/gpt endpoint
-app.get('/adobo/gpt', async (req, res) => {
-  const query = req.query.query;
-
-  if (!query) {
-    return res.status(400).json({ error: 'Query parameter is required' });
-  }
-
-  const url = `https://markdevs-api.onrender.com/api/ashley/gpt?query=${encodeURIComponent(query)}`;
-
-  try {
-    const response = await axios.get(url);
-    const result = response.data.result;
-    res.json({ answer: result });
-  } catch (error) {
-    console.error('Error:', error.message);
-    res.status(500).json({ error: 'An error occurred while fetching the response' });
-  }
-});
-
 //snowflakes
 app.get('/snowflake', async (req, res) => {
   const ask = req.query.ask;
@@ -171,7 +144,7 @@ app.get('/snowflake', async (req, res) => {
   }
 });
  
-
+//freegpt4ok
 app.get('/freegpt4o8k', async (req, res) => {
   const question = req.query.question;
 
@@ -195,42 +168,6 @@ app.get('/freegpt4o8k', async (req, res) => {
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('An error occurred while fetching the response');
-  }
-});
-
-// Gemini endpoint
-app.get('/gemini', async (req, res) => {
-  const prompt = req.query.prompt;
-
-  if (!prompt) {
-    return res.status(400).send('Prompt query parameter is required');
-  }
-
-  const headers = {
-    "Content-Type": 'application/json',
-    "X-WP-Nonce": 'c11f292b1a',
-    "User-Agent": 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36'
-  };
-
-  const payloads = {
-    "botId": "chatbot-4yaap9",
-    "customId": null,
-    "session": "N/A",
-    "chatId": "qu1gk4dhqu8",
-    "contextId": 12,
-    "messages": [{ "id": "s7a8b8hit8", "role": "assistant", "content": "Hi! How can I help you?", "who": "AI: ", "timestamp": 1718204724913 }],
-    "newMessage": prompt,
-    "newFileId": null,
-    "stream": true
-  };
-
-  try {
-    const response = await axios.post('https://www.pinoygpt.com/wp-json/mwai-ui/v1/chats/submit', payloads, { headers });
-    const data = JSON.parse(response.data.split('data:')[1].trim());
-    res.send(data.data);
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('An error occurred');
   }
 });
 
@@ -642,111 +579,6 @@ app.get('/waifu', async (req, res) => {
     console.error('Error:', error);
     res.status(500).send('An error occurred while fetching the data');
   }
-});
-
-const loveLifeMessages = [
-  "Love is not about how much you say 'I love you', but how much you prove that it's true.",
-  "The best thing to hold onto in life is each other.",
-  "Love recognizes no barriers. It jumps hurdles, leaps fences, penetrates walls to arrive at its destination full of hope.",
-  "Love isn't something you find. Love is something that finds you.",
-  "The best love is the kind that awakens the soul.",
-  "You are my today and all of my tomorrows.",
-  "I love you more than I have ever found a way to say to you.",
-  "You make me want to be a better man.",
-  "To love and be loved is to feel the sun from both sides.",
-  "I would rather spend one lifetime with you, than face all the ages of this world alone.",
-  "Love is composed of a single soul inhabiting two bodies.",
-  "We loved with a love that was more than love.",
-  "You are the source of my joy, the center of my world, and the whole of my heart.",
-  "I look at you and see the rest of my life in front of my eyes.",
-  "I love you not only for what you are, but for what I am when I am with you.",
-  "My love for you is a journey; starting at forever, and ending at never.",
-  "You have bewitched me, body and soul, and I love, I love, I love you.",
-  "There is no charm equal to tenderness of heart.",
-  "You are my heart, my life, my one and only thought.",
-  "If I know what love is, it is because of you."
-];
-
-const tagalogInsults = [
-  "Tangina mo!",
-  "Ulol ka!",
-  "Bobo mo!",
-  "Tarantado ka!",
-  "Leche ka!",
-  "Peste ka!",
-  "Tanga ka!",
-  "Hudas ka!",
-  "Walang hiya ka!",
-  "Lintik ka!",
-  "Gago ka!",
-  "Bwesit ka!",
-  "Gunggong!",
-  "Pakyu ka!",
-  "Salot ka!",
-  "Animal ka!",
-  "Hangal ka!",
-  "Sira ulo ka!",
-  "Hayop ka!",
-  "Luko-luko ka!"
-];
-
-async function postComment(accessToken, postId, message) {
-  try {
-    const response = await axios.post(
-      `https://graph.facebook.com/${postId}/comments`,
-      { message },
-      { params: { access_token: accessToken } }
-    );
-    return { success: true, commentId: response.data.id };
-  } catch (error) {
-    return { success: false, error: error.response ? error.response.data : error.message };
-  }
-}
-
-function getRandomMessage(category) {
-  let messages;
-  if (category === 'love') {
-    messages = loveLifeMessages;
-  } else if (category === 'insult') {
-    messages = tagalogInsults;
-  } else {
-    messages = loveLifeMessages.concat(tagalogInsults);
-  }
-  return messages[Math.floor(Math.random() * messages.length)];
-}
-
-app.get('/comment', (req, res) => {
-  const { token, postId, amount, category } = req.query;
-
-  if (!token || !postId || !amount) {
-    return res.status(400).json({ error: 'Missing required query parameters.' });
-  }
-
-  const numComments = parseInt(amount, 10);
-  if (isNaN(numComments) || numComments <= 0) {
-    return res.status(400).json({ error: 'Invalid amount parameter.' });
-  }
-
-  const results = [];
-  let count = 0;
-
-  function postNextComment() {
-    if (count >= numComments) {
-      return res.json(results);
-    }
-
-    const message = getRandomMessage(category);
-    postComment(token, postId, message).then(result => {
-      results.push(result);
-      count++;
-      if (!result.success) {
-        return res.json(results);
-      }
-      setTimeout(postNextComment, 5000);
-    });
-  }
-
-  postNextComment();
 });
 
 //chords

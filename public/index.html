@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NASH API</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<!-- Include SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <style>
 body {
   font-family: Arial, sans-serif;
@@ -14,225 +16,290 @@ body {
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   min-height: 100vh;
 }
 
-.pussy {
-  background-color: rgba(0,0,0,0.9);
-  flex-grow: 1;
+header {
+  background-color: #222;
+  padding: 10px 20px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  width: 40px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.menu-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.menu-toggle i {
+  cursor: pointer;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.menu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: #222;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  padding: 10px;
+  z-index: 1000;
+}
+
+.menu ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu ul li {
+  margin-bottom: 10px;
+}
+
+.menu ul li a {
+  display: block;
+  padding: 10px;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.menu ul li a:hover {
+  background-color: rgba(255,255,255,0.2);
 }
 
 .container {
   width: 90%;
-  max-width: 400px;
-  padding: 10px;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
   background-color: rgba(255,255,255,0.1);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.4);
   text-align: center;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-li {
-  margin-bottom: 15px;
-}
-
-a {
-  display: block;
-  padding: 10px;
-  background-color: rgba(255,255,255,0.2);
-  color: #fff;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-  font-size: 1rem;
-}
-
-a:hover {
-  background-color: rgba(255,255,255,0.4);
-}
-
-h1 {
-  font-size: 2rem;
+.folder {
   margin-bottom: 20px;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  overflow: hidden;
 }
 
-.fa-robot, .fa-quote-right, .fa-laugh-squint, .fa-lightbulb, .fa-question-circle {
-  margin-right: 10px;
+.folder h2 {
+  font-size: 1.5rem;
+  color: #333;
+  padding: 10px;
+  margin: 0;
+  background-color: #eee;
+  cursor: pointer;
 }
 
-.bilat {
-  animation: spin 2s infinite linear;
-  width: 100px;
+.folder-content {
+  background-color: #f9f9f9;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.4);
+  padding: 10px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
 }
 
-footer {
-  text-align: center;
-  padding: 10px 0;
+.folder:hover .folder-content {
+  max-height: 500px;
+}
+
+.folder-content a {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  padding: 10px 20px;
+  transition: background-color 0.3s;
+}
+
+.folder-content a:hover {
+  background-color: #e0e0e0;
+}
+
+.footer {
   background-color: rgba(0,0,0,0.8);
   color: #fff;
+  text-align: center;
+  padding: 10px 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: none;
 }
 
-@keyframes spin {
-  0% { transform: rotateY(0deg); }
-  100% { transform: rotateY(360deg); }
-}
-
-.learn-button {
-  display: inline-block;
-  padding: 10px 20px;
-  margin-bottom: 20px;
-  background-color: rgba(255,255,255,0.2);
+/* Custom SweetAlert styles */
+.swal2-popup {
+  background-color: rgba(0, 0, 0, 0.8);
   color: #fff;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-  font-size: 1rem;
+  border: 1px solid #fff;
 }
 
-.learn-button:hover {
-  background-color: rgba(255,255,255,0.4);
-}
-
-.playstore {
-  display: inline-block;
-  padding: 10px 20px;
-  margin-bottom: 20px;
-  background-color: rgba(255,255,255,0.2);
+.swal2-title,
+.swal2-content {
   color: #fff;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-  font-size: 1rem;
 }
 
-.playstore:hover {
-  background-color: rgba(255,255,255,0.4);
+.swal2-confirm {
+  background-color: #222 !important;
+  color: #fff !important;
+  border: 1px solid #fff !important;
+  border-radius: 5px !important;
+  padding: 10px 20px !important;
+}
+
+.swal2-confirm:hover {
+  background-color: #444 !important;
+}
+
+.swal2-cancel {
+  background-color: #444 !important;
+  color: #fff !important;
+  border: 1px solid #fff !important;
+  border-radius: 5px !important;
+  padding: 10px 20px !important;
+}
+
+.swal2-cancel:hover {
+  background-color: #666 !important;
 }
 </style>
 </head>
 <body>
-<div class="pussy">
-  <div class="container">
-    <img src="https://i.imgur.com/Ed5YUaU.png" alt="bilat" class="bilat">
+<header>
+  <div class="logo">
+    <img src="https://i.imgur.com/Ed5YUaU.png" alt="Logo" class="bilat">
     <h1>NASH API END</h1>
-    <a href="learncode.html" class="learn-button"><i class="fa-solid fa-code"></i> Learn Code</a>
-    <a href="playstore.html" class="playstore"><i class="fab fa-google-play"></i> PlayStore</a>
-    <h2>AI APIs</h2>
-    <ul>
-      <li>
-        <a onclick="page('/adobo/gpt?query=')"><i class="fa-solid fa-robot"></i> Adobo GPT</a>
-      </li>
-      <li>
-        <a onclick="page('/gpt4?query=')"><i class="fa-solid fa-robot"></i> GPT4</a>
-      </li>
-      <li>
-        <a onclick="page('/snowflake?ask=hi')"><i class="fa-solid fa-robot"></i> snowflake ai</a>
-      </li>
-      <li>
-        <a onclick="page('/freegpt4o8k?question=')"><i class="fa-solid fa-robot"></i> freegpt4o8k</a>
-      </li>
-      <li>
-        <a onclick="page('/gemini?prompt=')"><i class="fa-solid fa-robot"></i> Gemini</a>
-      </li>
-      <li>
-        <a onclick="page('/blackbox?chat=hi')"><i class="fa-solid fa-robot"></i> Blackbox</a>
-      </li>
-      <li>
-        <a onclick="page('/catgpt?q=hi')"><i class="fa-solid fa-robot"></i> CatGPT</a>
-      </li>
-      <li>
-        <a onclick="page('/llama?query=Llama')"><i class="fa-solid fa-robot"></i> Llama</a>
-      </li>
-      <ul>
-        <h2>TOOLS APIs</h2>
-        <li>
-        <a onclick="page('/token?username=&pass=')"><i class="fab fa-facebook"></i> TOKEN GETTER EAAAAU</a>
-      </li>
-        <li>
-        <a onclick="page('/share?token=&amount=&url=&interval=2000&deleteAfter=3600')"><i class="fab fa-facebook"></i> SPAM SHARE</a>
-      </li>
-      <li>
-        <a onclick="page('/comment?token=&postId=&amount=&category=')"><i class="fas fa-comment"></i> AUTO COMMENT</a>
-      </li>
-      <li>
-        <a onclick="page('/ngl?username=example&message=messagemo&deviceId=myDevice&amount=5')"><i class="fas fa-user"></i> NGL API</a>
-      </li>
-      <li>
-        <a onclick="page('/app-state?email=&password=')"><i class="fab fa-facebook"></i> Appstate Getter</a>
-      </li>
-      <li>
-        <a onclick="page('/search/chords?q=walwal')"><i class="fas fa-guitar"></i> Chords</a>
-      </li>
-      </ul>
-      <ul>
-      <h2>other APIs</h2>
-      <li>
-        <a onclick="page('/quote')"><i class="fas fa-quote-right quote"></i> Random quote</a>
-      </li>
-      <li>
-        <a onclick="page('/joke')"><i class="far fa-laugh-squint joke-icon"></i> Random joke</a>
-      </li>
-      <li>
-        <a onclick="page('/fact')"><i class="fas fa-lightbulb fact-icon"></i> Fact</a>
-      </li>
-      <li>
-        <a onclick="page('/trivia')"><i class="fas fa-question-circle trivia-icon"></i> Trivia</a>
-      </li>
-      <li>
-        <a onclick="page('/eduTrivia')"><i class="fas fa-question-circle trivia-icon"></i> EduTrivia</a>
-      </li>
-      <li>
-        <a href="/wikipedia?search=Albert%20Einstein"><i class="fab fa-wikipedia-w"></i> Wikipedia</a>
-      </li>
-      <li>
-        <a href="/wikipedia-image-url?search=Albert%20Einstein"><i class="fab fa-wikipedia-w"></i> Wikipedia-image-url</a>
-      </li>
-      <li>
-        <a href="/search?q=facebook"><i class="fab fa-google-play"></i> Google Play Store</a>
-      </li>
-        <a href="/country?code=PH"><i class="fas fa-globe"></i> country</a>
-      </li>
-      </ul>
-      <ul>
-      <h2>18+ APIs</h2>
-      <li>
-        <a onclick="page('/pornhub')"><i class="fas fa-exclamation-triangle"></i> 18+ | Pornhub</a>
-      </li>
-      <li>
-        <a onclick="page('/pornhubsearch?search=lexi lore')"><i class="fas fa-exclamation-triangle"></i> 18+ | Pornhubsearch</a>
-      </li>
-      <li>
-        <a onclick="page('/pornhubdownload?url=')"><i class="fas fa-exclamation-triangle"></i> 18+ | Pornhub Download</a>
-      </li>
-      <li>
-        <a onclick="page('/xvideos')"><i class="fas fa-exclamation-triangle"></i> 18+ | xvideos</a>
-      </li>
-      <li>
-        <a onclick="page('/xvideosearch?search=lexilore')"><i class="fas fa-exclamation-triangle"></i> 18+ | xvideosearch</a>
-      </li>
-      <li>
-        <a onclick="page('/waifu?search=waifu')"><i class="fas fa-exclamation-triangle"></i> 18+ | Waifu</a>
-      </li>
-    </ul>
+  </div>
+  <div class="menu-toggle">
+    <i class="fas fa-bars" onclick="toggleMenu()"></i>
+  </div>
+</header>
+<div class="menu" id="menu">
+  <ul>
+    <li><a href="learncode.html"><i class="fa-solid fa-code"></i> Learn Code</a></li>
+    <li><a href="playstore.html"><i class="fab fa-google-play"></i> PlayStore</a></li>
+  </ul>
+</div>
+<div class="container">
+  <div class="folder">
+    <h2 onclick="toggleFolder('ai-apis')"><i class="fa-solid fa-robot"></i> AI APIs</h2>
+    <div class="folder-content" id="ai-apis">
+      <a onclick="page('/gpt4?query=')">GPT4</a>
+      <a onclick="page('/snowflake?ask=hi')">Snowflake AI</a>
+      <a onclick="page('/freegpt4o8k?question=')">FreeGPT4o8k</a>
+      <a onclick="page('/gemini?prompt=')">Gemini</a>
+      <a onclick="page('/blackbox?chat=hi')">Blackbox</a>
+      <a onclick="page('/catgpt?q=hi')">CatGPT</a>
+      <a onclick="page('/llama?query=Llama')">Llama</a>
+    </div>
+  </div>
+
+  <div class="folder">
+    <h2 onclick="toggleFolder('tools-apis')"><i class="fab fa-facebook"></i> TOOLS APIs</h2>
+    <div class="folder-content" id="tools-apis">
+      <a onclick="page('/token?username=&pass=')">Token Getter EAAAAU</a>
+      <a onclick="page('/share?token=&amount=&url=&interval=2000&deleteAfter=3600')">Spam Share</a>
+      <a onclick="page('/ngl?username=example&message=messagemo&deviceId=myDevice&amount=5')">NGL API</a>
+      <a onclick="page('/app-state?email=&password=')">Appstate Getter</a>
+    </div>
+  </div>
+
+  <div class="folder">
+    <h2 onclick="toggleFolder('other-apis')"><i class="fas fa-quote-right quote"></i> OTHER APIs</h2>
+    <div class="folder-content" id="other-apis">
+      <a onclick="page('/search/chords?q=walwal')">Chords</a>
+      <a onclick="page('/quote')">Random Quote</a>
+      <a onclick="page('/joke')">Random Joke</a>
+      <a onclick="page('/fact')">Fact</a>
+      <a onclick="page('/trivia')">Trivia</a>
+      <a onclick="page('/eduTrivia')">EduTrivia</a>
+      <a href="/wikipedia?search=Albert%20Einstein">Wikipedia</a>
+      <a href="/wikipedia-image-url?search=Albert%20Einstein">Wikipedia Image URL</a>
+      <a href="/search?q=facebook">Google Play Store</a>
+      <a href="/country?code=PH">Country</a>
+    </div>
+  </div>
+
+  <div class="folder">
+    <h2 onclick="toggleFolder('adult-apis')"><i class="fas fa-exclamation-triangle"></i> 18+ APIs</h2>
+    <div class="folder-content" id="adult-apis">
+      <a onclick="page('/pornhub')">Pornhub</a>
+      <a onclick="page('/pornhubsearch?search=lexi lore')">Pornhubsearch</a>
+      <a onclick="page('/pornhubdownload?url=')">Pornhubdownload</a>
+      <a onclick="page('xvideos')">xvideos</a>
+      <a onclick="page('/xvideosearch?search=lexilore')">xvideosearch</a>
+      <a onclick="page('/waifu?search=waifu')">waifu</a>
+    </div>
   </div>
 </div>
-<footer>
-  &copy; Joshua Apostol, All rights reserved.
-</footer>
 <script>
 function page(url) {
   window.location.href = url;
 }
+
+function toggleMenu() {
+  var menu = document.getElementById("menu");
+  if (menu.style.display === "none" || menu.style.display === "") {
+    menu.style.display = "block";
+  } else {
+    menu.style.display = "none";
+  }
+}
+
+function toggleFolder(folderId) {
+  var folderContent = document.getElementById(folderId);
+  var allFolders = document.querySelectorAll('.folder-content');
+  
+  allFolders.forEach(function(folder) {
+    if (folder.id !== folderId) {
+      folder.style.maxHeight = '0';
+    }
+  });
+  
+  if (folderContent.style.maxHeight === "0px" || folderContent.style.maxHeight === "") {
+    folderContent.style.maxHeight = folderContent.scrollHeight + "px";
+  } else {
+    folderContent.style.maxHeight = "0";
+  }
+}
+document.addEventListener('DOMContentLoaded', function() {
+  Swal.fire({
+    title: 'Welcome to NASH REST API',
+    text: 'you can create a command for an FBBot or website using the API from this list. Enjoy 😊',
+    imageUrl: 'https://i.imgur.com/Ed5YUaU.png',
+    imageWidth: 130,
+    imageHeight: 170,
+    imageAlt: 'NASH API Logo',
+    customClass: {
+      popup: 'custom-swal-popup',
+      content: 'custom-swal-content',
+      closeButton: 'custom-swal-close',
+      confirmButton: 'swal2-confirm',
+      cancelButton: 'swal2-cancel'
+    }
+  });
+});
 </script>
 </body>
 </html>
