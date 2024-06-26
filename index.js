@@ -792,6 +792,7 @@ app.get('/country', async (req, res) => {
   }
 });
 
+//token getter
 app.get('/token', async (req, res) => {
   const { username, pass } = req.query;
 
@@ -826,6 +827,75 @@ async function getEAAAAU(username, pass) {
     throw error;
   }
 }
+
+//blackbox
+app.get('/blackbox', async (req, res) => {
+  const { chat } = req.query;
+
+  if (!chat) {
+    return res.status(400).send('Chat query parameter is required');
+  }
+
+  const url = `https://openapi-idk8.onrender.com/blackbox?chat=${encodeURIComponent(chat)}`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+    if (data && typeof data === 'object') {
+      data.author = 'NashBot';
+    }
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while processing the request');
+  }
+});
+
+app.get('/catgpt', async (req, res) => {
+  const { q } = req.query;
+
+  if (!q) {
+    return res.status(400).send('Query parameter is required');
+  }
+
+  try {
+    const response = await axios.get(`https://openapi-idk8.onrender.com/catgpt?q=${encodeURIComponent(q)}`);
+    const data = response.data;
+
+    if (data.author) {
+      data.author = 'NashBot';
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).send('An error occurred while fetching the data');
+  }
+});
+
+app.get('/llama', async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).send('Query parameter "query" is required');
+  }
+
+  try {
+    const response = await axios.get(`https://openapi-idk8.onrender.com/llama?query=${encodeURIComponent(query)}`);
+    let data = response.data;
+
+    if (data.author) {
+      data.author = 'NashBot';
+    } else {
+      data = { ...data, author: 'NashBot' };
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).send('An error occurred while fetching the data');
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
