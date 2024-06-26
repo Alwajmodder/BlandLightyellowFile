@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const cheerio = require('cheerio');
 const path = require('path');
 const cors = require('cors');
+require('dotenv').config();
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 app.use(cors());
@@ -726,6 +728,34 @@ app.get('/llama', async (req, res) => {
   } catch (error) {
     console.error('Error:', error.message);
     res.status(500).send('An error occurred while fetching the data');
+  }
+});
+
+
+//gemini
+const apiKey = process.env.API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
+
+app.get('/gemini', async (req, res) => {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+    const prompt = req.query.prompt;
+
+    if (!prompt) {
+      return res.status(400).json({ error: 'Prompt query parameter is required' });
+    }
+    
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    
+    res.json({ 
+      author: "NashBot",
+      response: response.text() 
+    });
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ error: 'An error occurred while generating content' });
   }
 });
 
