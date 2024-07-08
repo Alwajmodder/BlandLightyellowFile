@@ -13,8 +13,9 @@ language = "nodejs"
 
 [deployment]
 run = ["sh", "-c", "node index.js"]
-deploymentTarget = "cloudrun"
+deploymentTarget = "gce"
 ignorePorts = false
+build = ["sh", "-c", "npm install axios axios body-parser cors dotenv @google/generative-ai fs"]
 
 [[ports]]
 localPort = 3000

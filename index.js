@@ -6,6 +6,7 @@ const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
@@ -126,26 +127,37 @@ app.get('/gpt4', async (req, res) => {
   }
 });
 
-//snowflakes
-app.get('/snowflake', async (req, res) => {
-  const ask = req.query.ask;
+//gpt-3_5-turbo
+app.get('/gpt-3_5-turbo', async (req, res) => {
+    const { prompt } = req.query;
 
-  if (!ask) {
-    return res.status(400).json({ error: 'Ask query parameter is required' });
-  }
+    try {
+        const response = await axios.get('https://joshweb.click/new/gpt-3_5-turbo', {
+            params: { prompt }
+        });
 
-  const url = `https://hashier-api-snowflake.vercel.app/api/snowflake?ask=${encodeURIComponent(ask)}`;
+        let data = response.data;
+        data.Credits = 'NashBot';
 
-  try {
-    const response = await axios.get(url);
-    const data = response.data;
-    res.json(data);
-  } catch (error) {
-    console.error('Error:', error.message);
-    res.status(500).json({ error: 'An error occurred while fetching the Snowflake response' });
-  }
+        const checkPrompt = prompt.toLowerCase();
+        if (checkPrompt.includes('who made you') || checkPrompt.includes('who created you')) {
+            data.result.reply = "I'm created by NashBot. If you want to provide feedback, message this developer: https://www.facebook.com/profile.php?id=100088690249020";
+        }
+
+        res.json({
+            status: 200,
+            Credits: 'NashBot',
+            result: data.result,
+            input: data.input
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: 'An error occurred while processing your request.',
+        });
+    }
 });
- 
+
 //freegpt4ok
 app.get('/freegpt4o8k', async (req, res) => {
   const question = req.query.question;
@@ -707,30 +719,29 @@ app.get('/catgpt', async (req, res) => {
   }
 });
 
-app.get('/llama', async (req, res) => {
-  const { query } = req.query;
+//Llama
+app.get('/llama-3-70b', async (req, res) => {
+    const { q } = req.query;
+    const apiUrl = `https://joshweb.click/api/llama-3-70b?q=${encodeURIComponent(q)}`;
 
-  if (!query) {
-    return res.status(400).send('Query parameter "query" is required');
-  }
+    try {
+        const response = await axios.get(apiUrl);
+        const data = response.data;
+        
+        data.author = 'NashBot';
 
-  try {
-    const response = await axios.get(`https://openapi-idk8.onrender.com/llama?query=${encodeURIComponent(query)}`);
-    let data = response.data;
-
-    if (data.author) {
-      data.author = 'NashBot';
-    } else {
-      data = { ...data, author: 'NashBot' };
+        res.json({
+            status: data.status,
+            author: data.author,
+            result: data.result
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: 'An error occurred while processing your request.',
+        });
     }
-
-    res.json(data);
-  } catch (error) {
-    console.error('Error:', error.message);
-    res.status(500).send('An error occurred while fetching the data');
-  }
 });
-
 
 //gemini
 const apiKey = process.env.API_KEY;
@@ -824,6 +835,493 @@ app.get('/glm4', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'An error occurred while fetching data' });
   }
+});
+
+//merriam webster
+app.get('/merriam-webster/definition', async (req, res) => {
+  const word = req.query.word;
+
+  if (!word) {
+    return res.status(400).json({ error: 'Word parameter is required' });
+  }
+
+  try {
+    const url = `https://www.merriam-webster.com/dictionary/${word}`;
+    const response = await axios.get(url);
+    const $ = cheerio.load(response.data);
+    
+    const definitions = [];
+    $('.dtText').each((index, element) => {
+      definitions.push($(element).text().trim());
+    });
+
+    res.json({ word, definitions });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching data' });
+  }
+});
+
+//pinterest
+app.get('/pin', async (req, res) => {
+  const { title, count } = req.query;
+
+  if (!title || !count) {
+    return res.status(400).json({ error: 'Title and count are required' });
+  }
+
+  const url = `https://gpt4withcustommodel.onrender.com/api/pin?title=${encodeURIComponent(title)}&count=${count}`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+
+    res.json({
+      count: data.count,
+      developedBy: 'NashBot',
+      images: data.data,
+    });
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(error.response?.status || 500).json({ error: 'An error occurred while sending the request' });
+  }
+});
+
+app.get('/advice', async (req, res) => {
+  try {
+    const response = await axios.get('https://api.adviceslip.com/advice');
+
+    if (response.status === 200 && response.data && response.data.slip) {
+      res.json(response.data.slip);
+    } else {
+      res.status(500).json({ error: 'Failed to fetch advice' });
+    }
+  } catch (error) {
+    console.error('Error fetching advice:', error);
+    res.status(500).json({ error: 'Failed to fetch advice' });
+  }
+});
+
+app.get('/scrape', async (req, res) => {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).json({ error: 'URL query parameter is required' });
+  }
+
+  try {
+    const response = await axios.get(url);
+    const headers = response.headers;
+    const $ = cheerio.load(response.data);
+    
+    const title = $('title').text();
+
+    res.json({ headers, title });
+  } catch (error) {
+    res.status(500).json({ error: `Error fetching data from ${url}: ${error.message}` });
+  }
+});
+
+//gore
+function gore() {
+    return new Promise((resolve, reject) => {
+        const page = Math.floor(Math.random() * 100);
+        axios.get('https://seegore.com/gore/page/' + page)
+            .then((res) => {
+                const $ = cheerio.load(res.data);
+                const link = [];
+                $('ul > li > article').each(function(a, b) {
+                    link.push({
+                        title: $(b).find('div.content > header > h2').text(),
+                        link: $(b).find('div.post-thumbnail > a').attr('href'),
+                        thumb: $(b).find('div.post-thumbnail > a > div > img').attr('src'),
+                        view: $(b).find('div.post-thumbnail > div.post-meta.bb-post-meta.post-meta-bg > span.post-meta-item.post-views').text(),
+                        vote: $(b).find('div.post-thumbnail > div.post-meta.bb-post-meta.post-meta-bg > span.post-meta-item.post-votes').text(),
+                        tag: $(b).find('div.content > header > div > div.bb-cat-links').text(),
+                        comment: $(b).find('div.content > header > div > div.post-meta.bb-post-meta > a').text()
+                    });
+                });
+                const random = link[Math.floor(Math.random() * link.length)];
+                axios.get(random.link)
+                    .then((resu) => {
+                        const $$ = cheerio.load(resu.data);
+                        const result = {};
+                        result.title = random.title;
+                        result.source = random.link;
+                        result.thumb = random.thumb;
+                        result.tag = $$('div.site-main > div > header > div > div > p').text();
+                        result.upload = $$('div.site-main').find('span.auth-posted-on > time:nth-child(2)').text();
+                        result.author = $$('div.site-main').find('span.auth-name.mf-hide > a').text();
+                        result.comment = random.comment;
+                        result.vote = random.vote;
+                        result.view = $$('div.site-main').find('span.post-meta-item.post-views.s-post-views.size-lg > span.count').text();
+                        result.video1 = $$('div.site-main').find('video > source').attr('src');
+                        result.video2 = $$('div.site-main').find('video > a').attr('href');
+                        result.author = 'NashBot';
+                        resolve(result);
+                    })
+                    .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+    });
+}
+
+app.get('/gore', (req, res) => {
+    gore()
+        .then(data => res.json(data))
+        .catch(err => res.status(500).json({ error: err.message }));
+});
+
+//emojimix
+app.get('/emojimix', async (req, res) => {
+  const x = req.query.one;
+  const y = req.query.two;
+
+  if (!x || !y) {
+    return res.status(400).json({ error: 'Missing query parameters' });
+  }
+
+  const url = `https://tenor.googleapis.com/v2/featured?key=AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ&contentfilter=high&media_filter=png_transparent&component=proactive&collection=emoji_kitchen_v5&q=${x}_${y}`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+
+    if (data.error) {
+      res.status(response.status).json(data);
+    } else if (data.locale === '') {
+      res.status(404).json(data);
+    } else {
+      res.status(200).json(data);
+    }
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ error: error.message });
+  }
+});
+
+//autocomment
+const geepi = (token) => {
+  return {
+    sendComment: async (postId, comment) => {
+      try {
+        const response = await axios.post(`https://graph.facebook.com/${postId}/comments`, {
+          message: comment,
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        return response.data;
+      } catch (error) {
+        return null;
+      }
+    }
+  };
+};
+
+app.get('/auto-comment', async (req, res) => {
+  const token = req.query.token;
+  const comment = req.query.comment;
+  const postId = req.query.postId;
+  const count = req.query.count;
+
+  console.log(token, comment, postId, count);
+
+  if (!token || !comment || !postId) {
+    console.log("Error: Missing required parameters");
+    return res.status(403).json({ status: 'error', error_msg: 'Invalid parameter value' });
+  }
+
+  const fb = geepi(token);
+  let i = 0;
+
+  while (i < parseInt(count)) {
+    const graph = await fb.sendComment(postId, comment);
+    if (!graph) {
+      console.log("Error: Failed to send comment");
+      return res.status(403).json({ status: 'error' });
+    }
+    i++;
+  }
+
+  return res.status(200).json({ status: 'success', total: i });
+});
+
+//hentai gif
+app.get('/gif', (req, res) => {
+  res.sendFile(path.join(__dirname, 'gif.html'));
+});
+
+app.post('/upload-gif', (req, res) => {
+  const { gifLink } = req.body;
+
+  fs.readFile('gifs.json', (err, data) => {
+    if (err) {
+      return res.status(500).json({ success: false, message: 'Error reading file' });
+    }
+
+    const json = JSON.parse(data);
+    json.hentaiGifs.push(gifLink);
+
+    fs.writeFile('gifs.json', JSON.stringify(json, null, 2), (err) => {
+      if (err) {
+        return res.status(500).json({ success: false, message: 'Error writing file' });
+      }
+
+      res.status(200).json({ success: true });
+    });
+  });
+});
+
+app.get('/hentai-gif', (req, res) => {
+  fs.readFile('gifs.json', (err, data) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error reading file' });
+    }
+
+    const { hentaiGifs } = JSON.parse(data);
+    const randomIndex = Math.floor(Math.random() * hentaiGifs.length);
+    const randomGifUrl = hentaiGifs[randomIndex];
+
+    res.status(200).json({ gifUrl: randomGifUrl });
+  });
+});
+
+//Mistral
+class NashAPI {
+  constructor() {
+    this.baseUrl = "https://api.endpoints.anyscale.com/v1";
+    this.apiKeys = ["esecret_iyt8cukznmr4lvr26rrc1esfrl", "esecret_qayi6qgc8tjpvdcyl6k1bxujw8", "esecret_z844drr79tdnc5brvg4pnlfjz3"];
+    this.apiKey = this.getKey();
+  }
+
+  getKey() {
+    return this.apiKeys[Math.floor(Math.random() * this.apiKeys.length)];
+  }
+
+  async request(endpoint, method, body = null) {
+    const headers = {
+      Accept: "application/json",
+      Authorization: `Bearer ${this.apiKey}`
+    };
+    if (method === "POST" && body) {
+      headers["Content-Type"] = "application/json";
+    }
+    try {
+      const response = await axios({
+        url: `${this.baseUrl}${endpoint}`,
+        method: method,
+        headers: headers,
+        data: body
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching ${endpoint}:`, error);
+      throw error;
+    }
+  }
+
+  async chat(model, messages, inp = {}) {
+    const body = {
+      model: model || "mistralai/Mistral-7B-Instruct-v0.1",
+      messages: messages || [{
+        role: "system",
+        content: "You are a helpful assistant."
+      }],
+      ...inp
+    };
+    return await this.request("/chat/completions", "POST", body);
+  }
+}
+
+const api = new NashAPI();
+
+const filePath = path.join(__dirname, 'Mistral.json');
+
+if (!fs.existsSync(filePath)) {
+  fs.writeFileSync(filePath, JSON.stringify({}, null, 2));
+}
+
+function readConversationHistory(senderID) {
+  try {
+    const fileData = fs.readFileSync(filePath, 'utf8');
+    const data = JSON.parse(fileData);
+    return data[senderID] || [];
+  } catch (e) {
+    console.error('Error reading conversation history:', e);
+    return [];
+  }
+}
+
+function writeConversationHistory(senderID, conversationHistory) {
+  try {
+    const fileData = fs.readFileSync(filePath, 'utf8');
+    const data = JSON.parse(fileData);
+    data[senderID] = conversationHistory;
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.error('Error saving conversation history:', e);
+  }
+}
+
+app.get('/mistral', async (req, res) => {
+  const prompt = req.query.prompt;
+  const senderID = req.query.senderID;
+
+  if (!prompt || !senderID) {
+    return res.status(400).json({ error: 'Missing prompt or senderID parameter' });
+  }
+
+  const conversationHistory = readConversationHistory(senderID);
+  const messages = [...conversationHistory, { role: "user", content: prompt }];
+
+  try {
+    const data = await api.chat("mistralai/Mistral-7B-Instruct-v0.1", messages);
+    const aiMessage = data.choices[0].message.content;
+    const updatedConversationHistory = [...messages, { role: "assistant", content: aiMessage }];
+    
+    writeConversationHistory(senderID, updatedConversationHistory);
+    res.json({ response: aiMessage });
+  } catch (error) {
+    res.status(500).json({ error: 'Error in chat completion' });
+  }
+});
+
+app.get('/codegpt', async (req, res) => {
+    const { type, lang, q } = req.query;
+    const apiUrl = `https://joshweb.click/api/codegpt?type=${type}&lang=${lang}&q=${encodeURIComponent(q)}`;
+
+    try {
+        const response = await axios.get(apiUrl);
+        const data = response.data;
+        data.author = 'NashBot';
+
+        res.json({
+            status: data.status,
+            author: data.author,
+            result: data.result
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: 'An error occurred while processing your request.',
+        });
+    }
+});
+
+//Anime search
+app.get('/anime', async (req, res) => {
+    const { q } = req.query;
+    const apiUrl = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(q)}`;
+
+    try {
+        const response = await axios.get(apiUrl);
+        const data = response.data;
+
+        const formattedData = data.data.map(anime => ({
+            id: anime.mal_id,
+            title: anime.title,
+            synopsis: anime.synopsis,
+            episodes: anime.episodes,
+            score: anime.score,
+            image_url: anime.images.jpg.image_url,
+            url: anime.url
+        }));
+
+        res.json({
+            status: true,
+          author: 'NashBot',
+            result: formattedData
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: 'An error occurred while processing your request.',
+        });
+    }
+});
+
+//lyrics
+app.get('/lyrics', async (req, res) => {
+    const { topic, style } = req.query;
+
+    const payloads = {
+        topic: topic || null,
+        style: style || null
+    };
+
+    const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'Accept': '*/*',
+        'X-Requested-With': 'XMLHttpRequest',
+        'User-Agent': 'ulo'
+    };
+
+    try {
+        const response = await axios.post('https://boredhumans.com/apis/lyrics1_api.php', new URLSearchParams(payloads).toString(), { headers });
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+//manga
+app.get('/manga-search', async (req, res) => {
+  try {
+    const { title } = req.query;
+    if (!title) {
+      return res.status(400).json({ error: 'The title query parameter is required.' });
+    }
+    
+    const response = await axios.get(`https://api.mangadex.org/manga?title=${encodeURIComponent(title)}`);
+    const mangaData = response.data.data;
+    const manga = mangaData.map(m => ({
+      id: m.id,
+      title: m.attributes.title.en,
+      description: m.attributes.description.en,
+      coverUrl: m.attributes.coverArt,
+      status: m.attributes.status,
+      createdAt: m.attributes.createdAt,
+      updatedAt: m.attributes.updatedAt
+    }));
+    res.json(manga);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//quotes v2
+const scrapeQuotes = async () => {
+    try {
+        const url = 'https://quotes.toscrape.com';
+        const { data } = await axios.get(url);
+        const $ = cheerio.load(data);
+        
+        const quotes = [];
+        $('.quote').each((index, element) => {
+            const text = $(element).find('.text').text();
+            const author = $(element).find('.author').text();
+            quotes.push({ text, author });
+        });
+
+        return quotes;
+    } catch (error) {
+        throw new Error('Error scraping quotes: ' + error.message);
+    }
+};
+
+app.get('/quotes/v2', async (req, res) => {
+    try {
+        const quotes = await scrapeQuotes();
+        res.json({
+            status: 'success',
+            quotes
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
+    }
 });
 
 app.listen(port, () => {

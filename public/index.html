@@ -181,6 +181,57 @@ header {
 .swal2-cancel:hover {
   background-color: #666 !important;
 }
+
+.container2 {
+  width: 90%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  text-align: left;
+  margin-top: 20px;
+  position: relative;
+}
+
+.container2 h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #fff;
+  padding-top: 10px;
+  border-top: 2px solid #ddd;
+}
+
+.container2 p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: gray;
+}
+
+.container2 pre {
+  background-color: #222;
+  padding: 10px;
+  border-radius: 5px;
+  color: #fff;
+  overflow-x: auto;
+}
+
+@media screen and (max-width: 600px) {
+  .container2 {
+    padding: 10px;
+  }
+  
+  .container2 h2 {
+    font-size: 1.8rem;
+    padding-top: 5px;
+  }
+  
+  .container2 p {
+    font-size: 1rem;
+  }
+}
 </style>
 </head>
 <body>
@@ -205,13 +256,15 @@ header {
     <h2 onclick="toggleFolder('ai-apis')"><i class="fa-solid fa-robot"></i> AI APIs</h2>
     <div class="folder-content" id="ai-apis">
       <a onclick="page('/gpt4?query=')">GPT4</a>
+      <a onclick="page('/gpt-3_5-turbo?prompt=who made you?')">GPT-3_5-turbo</a>
       <a onclick="page('/glm4?message=hi')">Glm4-Ai</a>
-      <a onclick="page('/snowflake?ask=hi')">Snowflake AI</a>
       <a onclick="page('/freegpt4o8k?question=')">FreeGPT4o8k</a>
       <a onclick="page('/gemini?prompt=')">Gemini</a>
       <a onclick="page('/blackbox?chat=hi')">Blackbox</a>
       <a onclick="page('/catgpt?q=hi')">CatGPT</a>
-      <a onclick="page('/llama?query=Llama')">Llama</a>
+      <a onclick="page('/llama-3-70b?q=who are you?')">Llama-3-70b</a>
+      <a onclick="page('/mistral?prompt=&senderID=')">Mistral</a>
+      <a onclick="page('/codegpt?type=ask&lang=nodejs&q=Rest Api End')">CodeGpt (Ask)</a>
     </div>
   </div>
 
@@ -222,22 +275,16 @@ header {
       <a onclick="page('/share?token=&amount=&url=&interval=2000&deleteAfter=3600')">Spam Share</a>
       <a onclick="page('/ngl?username=example&message=messagemo&deviceId=myDevice&amount=5')">NGL API</a>
       <a onclick="page('/app-state?email=&password=')">Appstate Getter</a>
+      <a onclick="page('/scrape?url=')">Web Scraper</a>
+      <a onclick="page('/auto-comment?token=&comment=&postId=&count=')">Auto Comment</a>
     </div>
   </div>
-
+  
   <div class="folder">
-    <h2 onclick="toggleFolder('other-apis')"><i class="fas fa-quote-right quote"></i> OTHER APIs</h2>
-    <div class="folder-content" id="other-apis">
-      <a onclick="page('/search/chords?q=walwal')">Chords</a>
-      <a onclick="page('/quote')">Random Quote</a>
-      <a onclick="page('/joke')">Random Joke</a>
-      <a onclick="page('/fact')">Fact</a>
-      <a onclick="page('/trivia')">Trivia</a>
-      <a onclick="page('/eduTrivia')">EduTrivia</a>
-      <a href="/wikipedia?search=Albert%20Einstein">Wikipedia</a>
-      <a href="/wikipedia-image-url?search=Albert%20Einstein">Wikipedia Image URL</a>
-      <a href="/search?q=facebook">Google Play Store</a>
-      <a href="/country?code=PH">Country</a>
+    <h2 onclick="toggleFolder('anime-apis')"><i class="fas fa-star anime-icon"></i> Anime APIs</h2>
+    <div class="folder-content" id="anime-apis">
+      <a onclick="page('/anime?q=naruto')">Anime search</a>
+      <a onclick="page('/manga-search?title=naruto')">Manga Search Anime</a>
     </div>
   </div>
 
@@ -249,10 +296,57 @@ header {
       <a onclick="page('/pornhubdownload?url=')">Pornhubdownload</a>
       <a onclick="page('xvideos')">xvideos</a>
       <a onclick="page('/xvideosearch?search=lexilore')">xvideosearch</a>
+      
       <a onclick="page('/waifu?search=waifu')">waifu</a>
+
+      <a onclick="page('/hentai-gif')">Hentagif</a>
+    </div>
+  </div>
+  
+  <div class="folder">
+    <h2 onclick="toggleFolder('other-apis')"><i class="fas fa-quote-right quote"></i> OTHER APIs</h2>
+    <div class="folder-content" id="other-apis">
+      <a onclick="page('/search/chords?q=walwal')">Chords</a>
+      <a onclick="page('/quote')">Random Quote</a>
+      <a onclick="page('/quotes/v2')">QuotesV2</a>
+      <a onclick="page('/joke')">Random Joke</a>
+      <a onclick="page('/fact')">Fact</a>
+      <a onclick="page('/trivia')">Trivia</a>
+      <a onclick="page('/eduTrivia')">EduTrivia</a>
+      <a href="/wikipedia?search=Albert%20Einstein">Wikipedia</a>
+      <a href="/wikipedia-image-url?search=Albert%20Einstein">Wikipedia Image URL</a>
+      <a href="/search?q=facebook">Google Play Store</a>
+      <a href="/country?code=PH">Country</a>
+      <a onclick="page('/merriam-webster/definition?word=world')">Merriam Webster</a>
+      <a onclick="page('/advice')">Advice</a>
+      <a onclick="page('/gore')">GORE</a>
+      <a onclick="page('/emojimix?one=😮&two=🥺')">Emojimix</a>
+      <a onclick="page('/lyrics?topic=love&style=romantic')">Lyrics</a>
     </div>
   </div>
 </div>
+
+<div class="container2">
+  <h2>How to Use the NASH API</h2>
+  <p>To use the NASH API, follow the steps below:</p>
+  
+  <h3>Step 1: Choose an Endpoint</h3>
+  <p>Select the desired endpoint from the API list above.</p>
+  
+  <h3>Step 2: Set Query Parameters</h3>
+  <p>Each endpoint may require specific query parameters. Refer to the endpoint documentation for details.</p>
+  
+  <h3>Step 3: Make a Request</h3>
+  <p>Construct the API request URL with the chosen endpoint and query parameters. For example:</p>
+  <pre>https://nash-rest-api.replit.app/gpt4?query=Hello</pre>
+  
+  <h3>Step 4: Handle the Response</h3>
+  <p>The API will return a JSON response. Process the response in your application. A sample response might look like this:</p>
+  <pre>{
+  "response": "Hello! How can I assist you today?"
+}</pre>
+</div>
+
 <script>
 function page(url) {
   window.location.href = url;
@@ -283,6 +377,7 @@ function toggleFolder(folderId) {
     folderContent.style.maxHeight = "0";
   }
 }
+
 document.addEventListener('DOMContentLoaded', function() {
   Swal.fire({
     title: 'Welcome to NASH REST API',
