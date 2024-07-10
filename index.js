@@ -1347,6 +1347,70 @@ app.get('/pinterest', async (req, res) => {
   }
 });
 
+//anime hentai search
+app.get('/hentai', async (req, res) => {
+  const { search, amount } = req.query;
+
+  if (!search || !amount) {
+    return res.status(400).json({ error: 'Search query and amount are required' });
+  }
+
+  const numResults = parseInt(amount, 10);
+
+  try {
+    const response = await axios.get('https://gelbooru.com/index.php', {
+      params: {
+        page: 'dapi',
+        s: 'post',
+        q: 'index',
+        json: 1,
+        tags: search,
+        limit: numResults
+      }
+    });
+
+    const results = response.data.post.map(post => post.file_url);
+    res.json({
+      count: results.length,
+      data: results
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching data', error: error.message });
+  }
+});
+
+//random-video-hent
+app.get('/random/hentai/video/gif', async (req, res) => {
+  try {
+    const page = Math.floor(Math.random() * 100) + 1;
+
+    const response = await axios.get('https://e621.net/posts.json', {
+      params: {
+        tags: 'video rating:explicit',
+        limit: 100,
+        page: page
+      },
+      headers: {
+        'User-Agent': 'naahbot/1.0 (by joshuaApostol on e621)'
+      }
+    });
+
+    const posts = response.data.posts;
+    if (posts.length > 0) {
+      const randomIndex = Math.floor(Math.random() * posts.length);
+      const randomPost = posts[randomIndex];
+      const videoUrl = randomPost.file.url;
+
+      res.json({
+        videoUrl: videoUrl
+      });
+    } else {
+      res.status(404).json({ message: 'No videos found on this page' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching data', error: error.message });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

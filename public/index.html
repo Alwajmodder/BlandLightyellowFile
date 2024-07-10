@@ -6,6 +6,7 @@
 <title>NASH API</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
 <style>
 body {
   font-family: Arial, sans-serif;
@@ -285,6 +286,8 @@ header {
     <div class="folder-content" id="anime-apis">
       <a onclick="page('/anime?q=naruto')">Anime search</a>
       <a onclick="page('/manga-search?title=naruto')">Manga Search Anime</a>
+      <a onclick="page('hentai?search=anime&amount=10')">18+| hentai Search</a>
+      <a onclick="page('/random/hentai/video/gif')">18+| hentai Random-vid-gif</a>
     </div>
   </div>
 
@@ -349,6 +352,16 @@ header {
 </div>
 
 <script>
+let sound = new Howl({
+    src: ["https://files.catbox.moe/il9cy7.mp3"],
+    autoplay: true,
+    loop: true,
+    format: ['mp3'],
+    volume: 1,
+    onend: () => {}
+    });
+    sound.play();
+  
 function page(url) {
   window.location.href = url;
 }
