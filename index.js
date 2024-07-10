@@ -1324,6 +1324,30 @@ app.get('/quotes/v2', async (req, res) => {
     }
 });
 
+//pinterest
+app.get('/pinterest', async (req, res) => {
+  const { search } = req.query;
+
+  if (!search) {
+    return res.status(400).json({ error: 'Search query parameter is required' });
+  }
+
+  try {
+    const response = await axios.get(`https://hiroshi-rest-api.replit.app/search/pinterest?search=${encodeURIComponent(search)}`);
+    const imageUrls = response.data;
+
+    const result = {
+      count: imageUrls.length,
+      data: imageUrls
+    };
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching data from the external API' });
+  }
+});
+
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
