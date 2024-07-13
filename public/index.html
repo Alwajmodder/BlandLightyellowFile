@@ -12,7 +12,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #333;
+  background-color: #2c2c2c;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -20,11 +20,12 @@ body {
 }
 
 header {
-  background-color: #222;
-  padding: 10px 20px;
+  background-color: #1d1d1d;
+  padding: 15px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
 
 .logo {
@@ -33,9 +34,14 @@ header {
 }
 
 .logo img {
-  width: 40px;
+  width: 50px;
   height: auto;
   margin-right: 10px;
+}
+
+.logo h1 {
+  font-size: 1.8rem;
+  margin: 0;
 }
 
 .menu-toggle {
@@ -46,17 +52,17 @@ header {
 .menu-toggle i {
   cursor: pointer;
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
 }
 
 .menu {
   display: none;
   position: absolute;
-  top: 60px;
+  top: 70px;
   right: 20px;
-  background-color: #222;
+  background-color: #1d1d1d;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
   padding: 10px;
   z-index: 1000;
 }
@@ -76,80 +82,80 @@ header {
   padding: 10px;
   color: #fff;
   text-decoration: none;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, padding-left 0.3s;
 }
 
 .menu ul li a:hover {
   background-color: rgba(255,255,255,0.2);
+  padding-left: 20px;
 }
 
 .container {
   width: 90%;
-  max-width: 800px;
+  max-width: 900px;
   margin: 20px auto;
   padding: 20px;
-  background-color: rgba(255,255,255,0.1);
+  background-color: #333;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
 
 .folder {
   margin-bottom: 20px;
-  background-color: rgba(255,255,255,0.1);
+  background-color: #444;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
   overflow: hidden;
 }
 
 .folder h2 {
-  font-size: 1.5rem;
-  color: #333;
-  padding: 10px;
+  font-size: 1.4rem;
+  color: #fff;
+  padding: 15px;
   margin: 0;
-  background-color: #eee;
+  background-color: #555;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.folder h2 i {
+  margin-right: 10px;
 }
 
 .folder-content {
-  background-color: #f9f9f9;
+  background-color: #666;
   border-radius: 0 0 8px 8px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.4);
   padding: 10px;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
 }
 
-.folder:hover .folder-content {
-  max-height: 500px;
-}
-
 .folder-content a {
   display: block;
-  color: #333;
+  color: #ddd;
   text-decoration: none;
-  padding: 10px 20px;
+  padding: 10px;
   transition: background-color 0.3s;
 }
 
 .folder-content a:hover {
-  background-color: #e0e0e0;
+  background-color: #777;
 }
 
 .footer {
-  background-color: rgba(0,0,0,0.8);
+  background-color: #1d1d1d;
   color: #fff;
   text-align: center;
   padding: 10px 0;
-  position: absolute;
+  position: relative;
   bottom: 0;
   width: 100%;
-  display: none;
 }
 
 .swal2-popup {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #1d1d1d;
   color: #fff;
   border: 1px solid #fff;
 }
@@ -160,7 +166,7 @@ header {
 }
 
 .swal2-confirm {
-  background-color: #222 !important;
+  background-color: #333 !important;
   color: #fff !important;
   border: 1px solid #fff !important;
   border-radius: 5px !important;
@@ -185,15 +191,13 @@ header {
 
 .container2 {
   width: 90%;
-  max-width: 800px;
+  max-width: 900px;
   margin: 20px auto;
   padding: 20px;
-  background-color: rgba(255,255,255,0.1);
+  background-color: #333;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
   text-align: left;
-  margin-top: 20px;
-  position: relative;
 }
 
 .container2 h2 {
@@ -208,11 +212,11 @@ header {
 .container2 p {
   font-size: 1.2rem;
   line-height: 1.6;
-  color: gray;
+  color: #ddd;
 }
 
 .container2 pre {
-  background-color: #222;
+  background-color: #1d1d1d;
   padding: 10px;
   border-radius: 5px;
   color: #fff;
@@ -336,25 +340,30 @@ header {
 </div>
 
 <div class="container2">
-  <h2>How to Use the NASH API</h2>
-  <p>To use the NASH API, follow the steps below:</p>
-  
-  <h3>Step 1: Choose an Endpoint</h3>
-  <p>Select the desired endpoint from the API list above.</p>
-  
-  <h3>Step 2: Set Query Parameters</h3>
-  <p>Each endpoint may require specific query parameters. Refer to the endpoint documentation for details.</p>
-  
-  <h3>Step 3: Make a Request</h3>
-  <p>Construct the API request URL with the chosen endpoint and query parameters. For example:</p>
-  <pre>https://nash-rest-api.replit.app/gpt4?query=Hello</pre>
-  
-  <h3>Step 4: Handle the Response</h3>
-  <p>The API will return a JSON response. Process the response in your application. A sample response might look like this:</p>
-  <pre>{
-  "response": "Hello! How can I assist you today?"
-}</pre>
+  <h2>API Endpoints</h2>
+  <p>Here you can find various API endpoints that you can test. Simply click on the links above to test different APIs.</p>
+  <pre> 
+{
+  "endpoints": [
+    "/gpt4?query=",
+    "/gpt-3_5-turbo?prompt=who made you?",
+    "/glm4?message=hi",
+    "/freegpt4o8k?question=",
+    "/gemini?prompt=",
+    "/blackbox?chat=hi",
+    "/catgpt?q=hi",
+    "/llama-3-70b?q=who are you?",
+    "/mistral?prompt=&senderID=",
+    "/codegpt?type=ask&lang=nodejs&q=make rest Api End code",
+    "/ai/chat?prompt=hi"
+  ]
+}
+  </pre>
 </div>
+
+<footer class="footer">
+  <p>&copy; 2024 joshua Apostol. All rights reserved.</p>
+</footer>
 
 <script>
 let sound = new Howl({
