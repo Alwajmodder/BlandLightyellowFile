@@ -1456,6 +1456,95 @@ app.get('/ai/chat', async (req, res) => {
     }
 });
 
+//token&cookie
+app.get('/api/token-cookie', async (req, res) => {
+    const { username, password } = req.query;
+
+    if (!username || !password) {
+        return res.status(400).json({ status: false, message: 'Username and password are required.' });
+    }
+
+    try {
+        const response = await axios.get(`https://markdevs69-1efde24ed4ea.herokuapp.com/api/token&cookie`, {
+            params: {
+                username,
+                password
+            }
+        });
+
+        if (response.data.status) {
+            res.json({
+                status: true,
+                message: 'Information retrieved successfully!',
+                data: response.data.data
+            });
+        } else {
+            res.status(500).json({ status: false, message: 'Failed to retrieve information.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: false, message: 'An error occurred while processing your request.' });
+    }
+});
+
+//image-emi
+app.get('/image-emi', async (req, res) => {
+    const { prompt } = req.query;
+
+    if (!prompt) {
+        return res.status(400).json({ error: 'Usage: /image-emi?prompt=dog' });
+    }
+
+    try {
+        const response = await axios.get(`https://hiroshi-rest-api.replit.app/image/emi`, {
+            params: { prompt },
+            responseType: 'arraybuffer'
+        });
+
+        res.set('Content-Type', response.headers['content-type']);
+        res.send(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while processing your request.' });
+    }
+});
+
+//bible random
+app.get('/random-bible-verse', async (req, res) => {
+    try {
+        const response = await axios.get(`https://labs.bible.org/api/?passage=random`);
+        
+        res.json({ verse: response.data });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while processing your request.' });
+    }
+});
+
+//AI Girlfriend (PRO)
+app.get('/ai-gf', async (req, res) => {
+    const { q } = req.query;
+
+    if (!q) {
+        return res.status(400).json({
+            error: 'Please provide a query parameter using the format: /ai-gf?q=<text>. For example, /ai-gf?q=hello'
+        });
+    }
+
+    try {
+        const response = await axios.get(`https://joshweb.click/api/ai-gf`, {
+            params: { q }
+        });
+        
+        const modifiedResponse = { ...response.data, author: 'NashBot' };
+
+        res.json(modifiedResponse);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while processing your request. Please try again later.' });
+    }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
