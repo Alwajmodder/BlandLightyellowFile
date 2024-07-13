@@ -1412,48 +1412,27 @@ app.get('/random/hentai/video/gif', async (req, res) => {
   }
 });
 
-//WhiteRabbitNeo
-app.get('/ai/chat', async (req, res) => {
-    const { prompt } = req.query;
-
-    if (!prompt) {
-        return res.status(400).send({ error: 'Missing prompt parameter' });
-    }
-
-    const url = 'https://www.whiterabbitneo.com/api/chat';
-    const headers = {
-        'authority': 'www.whiterabbitneo.com',
-        'accept': '*/*',
-        'accept-language': 'en-US,en;q=0.9',
-        'content-type': 'text/plain;charset=UTF-8',
-        'cookie': '__Host-next-auth.csrf-token=5c05f84fc8e29b1d30de0b9a69afae0ab7337b39fca6765993b31032feb3e1c3%7Ca6277e613bcbde13c942c643fd72291b39dee1596a03ca7695720a2ec2801fcd; __Secure-next-auth.callback-url=https%3A%2F%2Fwww.whiterabbitneo.com%2F; __Secure-next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..IhuV0dMI3kx1juK3.J_3ZSOOA5hMRIYgw0R8-ztS9FoAmXNQppACPenVKAJg5N9V1fFdRvCDUxjU5jOt3Jflucfv-VtiXcgMLsqpA3zrV-av5ZsFVYa026xpIeKafAbIwIVqPDbVHySFRNMij-vegqq-2fS2C2w_ipN9P_-UJmy99qgOBJb1AD2UJY8ybicGbSFf1MqDRw7jXaWQM46j0XFybzYqUEckyEKI4KV6iYb7h__tgYyJgKtbshNCZ-3Q1LPQRvDsk0L8j9c_HhCWgclx3LBRt7YJvRk3E2gaOpG1o-GiVGQhi6G0i2JQnmhqpx5CxxeUVgsiSdAB9Oy9JqXLeoMPwgWKWfTqFXjTfM7jDrCbufh3YRmhirrFtGkXzqhDFnv5pWLLbM1OH6vewuLO7pseuED38z4JZdWlua4x4vWUUhe7an8hkMyMdxFMTZjR1SjiDsOZK0bV91mmSm8OXwYbOn4vLUCORBRUl33qikJgiKLc_XtwfLCyFgEacrx45Nwr7tsODfQ.mnmy_2XO3As6AmJ47jyJcw',
-        'origin': 'https://www.whiterabbitneo.com',
-        'referer': 'https://www.whiterabbitneo.com/',
-        'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
-        'sec-ch-ua-mobile': '?1',
-        'sec-ch-ua-platform': '"Android"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-    };
-
-    const data = {
-        "messages": [
-            {"id": "qucxWkG", "content": prompt, "role": "user"}
-        ],
-        "id": "qucxWkG",
-        "enhancePrompt": false,
-        "useFunctions": false
-    };
-
-    try {
-        const response = await axios.post(url, data, { headers });
-        res.send(response.data);
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send({ error: 'An error occurred' });
-    }
+//autoreact fb
+app.get('/autoreact', (req, res) => {
+    const { link, type, cookie } = req.query;
+    axios.post("https://flikers.net/android/android_get_react.php", {
+        post_id: link,
+        react_type: type,
+        version: "v1.7"
+    }, {
+        headers: {
+            'User-Agent': "Dalvik/2.1.0 (Linux; U; Android 12; V2134 Build/SP1A.210812.003)",
+            'Connection': "Keep-Alive",
+            'Accept-Encoding': "gzip",
+            'Content-Type': "application/json",
+            'Cookie': cookie
+        }
+    })
+        .then(dat => { res.json(dat.data); })
+        .catch(e => {
+            console.error(e);
+            res.json({ error: 'an error occurred' });
+        });
 });
 
 //token&cookie
@@ -1539,6 +1518,31 @@ app.get('/ai-gf', async (req, res) => {
         const modifiedResponse = { ...response.data, author: 'NashBot' };
 
         res.json(modifiedResponse);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while processing your request. Please try again later.' });
+    }
+});
+
+//font converter
+app.get('/convert-text', async (req, res) => {
+    const { text } = req.query;
+
+    if (!text) {
+        return res.status(400).json({
+            error: 'Please provide a text parameter using the format: /convert-text?text=<yourText>. For example, /convert-text?text=hello'
+        });
+    }
+
+    try {
+        const response = await axios.get('http://qaz.wtf/u/convert.cgi', {
+            params: { text }
+        });
+
+        const $ = cheerio.load(response.data);
+        const fontData = $('body').text();
+
+        res.json({ fontData });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while processing your request. Please try again later.' });
